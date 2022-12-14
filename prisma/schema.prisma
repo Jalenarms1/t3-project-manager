@@ -24,6 +24,35 @@ model Space {
   users     User[]   @relation(name: "participating")
 }
 
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  images      String[]
+  posts       Post[]
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  author    User      @relation(fields: [userId], references: [id])
+  userId    String
+  project   Project?  @relation(fields: [projectId], references: [id])
+  projectId String?
+  image     String?
+  content   String
+  comments  Comment[]
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    String
+  comments  Comment[] @relation(name: "replies")
+  comment   Comment?  @relation(name: "replies", fields: [commentId], references: [id])
+  commentId String?
+  content   String
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -61,6 +90,7 @@ model User {
   sessions      Session[]
   participating Space[]   @relation(name: "participating")
   hosting       Space[]   @relation(name: "hosting")
+  posts         Post[]
 }
 
 model VerificationToken {
